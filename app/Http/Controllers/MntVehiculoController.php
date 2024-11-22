@@ -16,11 +16,11 @@ class MntVehiculoController extends Controller
 
         $vehiculos = MntVehiculo::query()
         ->when($search, function ($query, $search) {
-            $query->where('marca', 'like', "%{$search}%")
-                  ->orWhere('modelo', 'like', "%{$search}%")
-                  ->orWhere('placa', 'like', "%{$search}%")
-                  ->orWhere('color', 'like', "%{$search}%")
-                  ->orWhere('año', 'like', "%{$search}%");
+            $query->where('marca', 'ilike', "%{$search}%")
+                  ->orWhere('modelo', 'ilike', "%{$search}%")
+                  ->orWhere('placa', 'ilike', "%{$search}%")
+                  ->orWhere('color', 'ilike', "%{$search}%")
+                  ->orWhere('año', 'ilike', "%{$search}%");
 
         })
         ->paginate(5);
@@ -93,8 +93,16 @@ class MntVehiculoController extends Controller
     // Eliminar un vehículo
     public function destroy(MntVehiculo $vehiculo)
     {
-        $vehiculo->delete();
-        return redirect()->route('vehiculo.index');
+        $deleteVehiculo = $vehiculo->delete();
+
+        if ($deleteVehiculo) {
+            toastr()->success('Vehículo eliminado exitosamente', 'Eliminación');
+            return redirect()->route('vehiculo.index');
+        } else {
+            toastr()->error('Hubo un problema al eliminar el vehículo', 'Error');
+            return redirect()->route('vehiculo.index');
+        }
+
     }
 
 }
